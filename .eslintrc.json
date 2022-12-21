@@ -17,6 +17,10 @@
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "semi": ["warn", "always"]
+    "semi": ["warn", "always"],
+    "no-var": ["off"],
+    "react/react-in-jsx-scope": ["off"],
+    "no-empty-function": "off",
+    "@typescript-eslint/no-empty-function": "off"
   }
 }
