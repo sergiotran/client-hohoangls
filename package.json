@@ -18,17 +18,23 @@
   "author": "Sergio Tran",
   "license": "MIT",
   "dependencies": {
+    "@types/lodash": "^4.14.191",
+    "axios": "^1.2.1",
     "classnames": "^2.3.2",
     "formidable": "^2.1.1",
+    "lodash": "^4.17.21",
     "mongoose": "^6.8.1",
     "next": "^13.0.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-sortablejs": "^6.1.4",
+    "sortablejs": "^1.15.0"
   },
   "devDependencies": {
     "@types/formidable": "^2.0.5",
     "@types/node": "18.11.17",
     "@types/react": "^18.0.26",
+    "@types/sortablejs": "^1.15.0",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
     "autoprefixer": "^10.4.13",

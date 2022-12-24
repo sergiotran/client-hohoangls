@@ -19,6 +19,16 @@ export default async function handler(
         .catch((error: Error) => res.status(400).json(error));
       break;
     case 'POST':
+      controller
+        .create(req.body)
+        .then((data) => res.status(200).json(data))
+        .catch((error: Error) => res.status(400).json(error));
+      break;
+    case 'PATCH':
+      controller
+        .update(req.body._id, req.body)
+        .then((data) => res.status(200).json(data))
+        .catch((error: Error) => res.status(400).json(error));
       break;
     default:
       res.status(404).json({

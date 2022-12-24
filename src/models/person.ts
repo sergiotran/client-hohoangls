@@ -1,16 +1,37 @@
 import { Schema, models, model } from 'mongoose';
 
-type Person = {
+export type Person = {
   name: string;
   date_of_birth: string;
-  date_of_death: string | null;
-  childrens: Schema.Types.ObjectId[] | null;
-  sisters: Schema.Types.ObjectId[] | null;
-  brothers: Schema.Types.ObjectId[] | null;
-  wife: Schema.Types.ObjectId | null;
-  husband: Schema.Types.ObjectId | null;
-  father: Schema.Types.ObjectId | null;
-  mother: Schema.Types.ObjectId | null;
+  date_of_death?: string;
+  gender: 'male' | 'female'; 
+  childrens?: Schema.Types.ObjectId[];
+  sisters?: Schema.Types.ObjectId[];
+  brothers?: Schema.Types.ObjectId[];
+  wife?: Schema.Types.ObjectId;
+  husband?: Schema.Types.ObjectId;
+  father?: Schema.Types.ObjectId;
+  mother?: Schema.Types.ObjectId;
+};
+
+export type IPerson = Omit<
+  Person,
+  | 'childrens'
+  | 'sisters'
+  | 'brothers'
+  | 'wife'
+  | 'husband'
+  | 'father'
+  | 'mother'
+> & {
+  _id: string;
+  childrens?: IPerson[];
+  sisters?: IPerson[];
+  brothers?: IPerson[];
+  wife?: IPerson;
+  husband?: IPerson;
+  father?: IPerson;
+  mother?: IPerson;
 };
 
 const PersonSchema = new Schema<Person>(
@@ -18,6 +39,7 @@ const PersonSchema = new Schema<Person>(
     name: { type: String, required: true },
     date_of_birth: { type: String, required: true },
     date_of_death: { type: String, required: false, default: null },
+    gender: {type: String, required: true},
     childrens: [
       {
         type: Schema.Types.ObjectId,
