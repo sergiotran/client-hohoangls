@@ -13,12 +13,16 @@
   "keywords": [
     "nextjs",
     "react",
-    "drag and drop"
+    "drag and drop",
+    "sortable",
+    "cms"
   ],
   "author": "Sergio Tran",
   "license": "MIT",
   "dependencies": {
-    "@types/lodash": "^4.14.191",
+    "@dnd-kit/core": "^6.0.6",
+    "@dnd-kit/sortable": "^7.0.1",
+    "@dnd-kit/utilities": "^3.2.1",
     "axios": "^1.2.1",
     "classnames": "^2.3.2",
     "formidable": "^2.1.1",
@@ -26,12 +30,11 @@
     "mongoose": "^6.8.1",
     "next": "^13.0.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-sortablejs": "^6.1.4",
-    "sortablejs": "^1.15.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/formidable": "^2.0.5",
+    "@types/lodash": "^4.14.191",
     "@types/node": "18.11.17",
     "@types/react": "^18.0.26",
     "@types/sortablejs": "^1.15.0",
