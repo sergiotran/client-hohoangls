@@ -1,56 +1,71 @@
-import { IPerson } from '@/models/person';
 import React from 'react';
-import { ReactSortable } from 'react-sortablejs';
-import ChildList from './components/child-list';
-import { sortableItemClassName, sortableCommonOption, sortableChoosenItemClassName, sortableClassName } from './person-constant';
+import { IPerson } from '@/models/person';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import dynamic from 'next/dynamic';
+import { rootListId } from './person-constant';
+import { moveInArray, moveToOtherArray } from '@/utils/array-utils';
+import { find } from 'lodash';
+
+const SortablePersonList = dynamic(
+  () => import('./components/sortable-person-list'),
+  { ssr: false },
+);
 
 type Props = {
   persons: IPerson[];
-  isChildList?: boolean;
 };
+const PersonManageUI: React.FC<Props> = ({ persons }) => {
+  const [personList, setPersonList] = React.useState<IPerson[]>(persons || []);
 
-const PersonManageUI: React.FC<Props> = ({ persons = [] }) => {
-  const [personList, setPersonList] = React.useState<IPerson[]>(persons);
+  const handleFindPersonById = React.useCallback((list: IPerson[], id: string) => {
+    if(!list.length) return null;
+    const founded = find(list, {
+      _id: id
+    });
+    if(!founded) {
+      list.forEach((person) => {
+        handleFindPersonById(person.childrens || [], id);
+      });
+    }
+    return founded;
+  }, []);
 
-  const renderPersons = React.useMemo(
-    () =>
-      personList.map((person, index) => (
-        <div className={sortableItemClassName} key={person._id}>
-          {person.name}
-          {!!person.childrens && person.childrens.length > 0 && (
-            <ChildList
-              key={person._id}
-              id={person._id}
-              indexes={[index]}
-              list={person.childrens}
-              setList={setPersonList}
-            />
-          )}
-        </div>
-      )),
-    [personList],
-  );
+  const handleDragEnd = React.useCallback((result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    const sourceIndex = result.source.index;
+    const destIndex = result.destination.index;
+    if(result.source.droppableId === rootListId && result.destination.droppableId === rootListId) {
+      // Reorder root
+      setPersonList((prevList) => moveInArray(prevList, sourceIndex, destIndex));
+    }
+
+    if(result.source.droppableId === rootListId && result.destination.droppableId !== rootListId) {
+      const targetPerson = handleFindPersonById(personList, result.destination.droppableId);
+      // Reorder from root to childrens
+      if(targetPerson && targetPerson.childrens) {
+        const cloneList = [...personList];
+        moveToOtherArray(cloneList, targetPerson.childrens, sourceIndex, destIndex);
+        setPersonList(cloneList);
+      }
+    }
+
+    if(result.source.droppableId !== rootListId && result.destination.droppableId === rootListId) {
+      const targetPerson = handleFindPersonById(personList, result.source.droppableId);
+      if(targetPerson && targetPerson.childrens) {
+        const cloneList = [...personList];
+        console.log(cloneList);
+        moveToOtherArray(targetPerson.childrens, cloneList, sourceIndex, destIndex);
+        setPersonList(cloneList);
+      }
+    }
+  }, []);
 
   return (
-    <div>
-      <div className='flex mb-3'>
-        <h1 className='text-lg font-bold border-b-2 pt-2 pb-1'>
-          Person Manager
-        </h1>
-      </div>
-      <div className='flex flex-col'>
-        <ReactSortable
-          {...sortableCommonOption}
-          chosenClass={sortableChoosenItemClassName}
-          className={sortableClassName}
-          list={personList}
-          setList={setPersonList}
-        >
-          {renderPersons}
-        </ReactSortable>
-        <button>Save</button>
-      </div>
-    </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <SortablePersonList list={personList} />
+    </DragDropContext>
   );
 };
 
