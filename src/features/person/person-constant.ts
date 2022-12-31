@@ -1,3 +1,3 @@
 export const rootListId = 'root';
-export const sortableClassName = 'rounded p-3 gap-2';
-export const sortableItemClassName = 'rounded bg-white shadow-lg';
+export const sortableClassName = 'relative p-2 my-3 rounded shadow-lg border w-full';
+export const sortableItemClassName = 'rounded bg-white shadow-lg my-3';

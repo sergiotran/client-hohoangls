@@ -14,42 +14,37 @@ const SortablePersonList: React.FC<Props> = ({
   parentId = rootListId,
 }) => {
   return (
-    <Droppable
-      droppableId={parentId}
-      // type={parentId ? rootListId : `${parentId}-childrens`}
-      type='person'
-    >
-      {(provided, context) => {
-        const classes = classNames({
-          [sortableClassName]: true,
-          'bg-gray-100 p-5': parentId !== rootListId,
-          'bg-indigo-100': context.isDraggingOver,
-        });
-        return (
-          <div
-            ref={provided.innerRef}
-            className={classes}
-            {...provided.droppableProps}
-          >
-            {(() => {
-              if (!list.length) {
-                return null;
-              }
-              return list.map((person, index) => {
-                return (
-                  <SortablePersonItem
-                    key={person._id}
-                    {...person}
-                    index={index}
-                  />
-                );
-              });
-            })()}
-            {provided.placeholder}
-          </div>
-        );
-      }}
-    </Droppable>
+    <div>
+      <Droppable droppableId={parentId}>
+        {(provided, context) => {
+          const classes = classNames({
+            [sortableClassName]: true,
+            'bg-gray-100 p-5': parentId !== rootListId,
+            'bg-indigo-100': context.isDraggingOver,
+          });
+          return (
+            <div
+              ref={provided.innerRef}
+              className={classes}
+              {...provided.droppableProps}
+            >
+              {(() => {
+                return list.map((person, index) => {
+                  return (
+                    <SortablePersonItem
+                      key={person._id}
+                      {...person}
+                      index={index}
+                    />
+                  );
+                });
+              })()}
+              {provided.placeholder}
+            </div>
+          );
+        }}
+      </Droppable>
+    </div>
   );
 };
 
