@@ -5,7 +5,6 @@ import { GetServerSideProps } from 'next';
 import { IPerson } from '@/models/person';
 import { getPersons } from '@/features/person/person-api';
 import PersonManageUI from '@/features/person/person-manage-ui';
-import { resetServerContext } from 'react-beautiful-dnd';
 
 type Props = {
   persons: IPerson[];
@@ -20,7 +19,6 @@ PersonManagePage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const persons = await getPersons();
-  resetServerContext();
   return {
     props: {
       persons,
