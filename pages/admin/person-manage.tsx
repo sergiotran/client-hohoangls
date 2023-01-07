@@ -7,11 +7,22 @@ import { getPersons } from '@/features/person/person-api';
 import PersonManageUI from '@/features/person/person-manage-ui';
 
 type Props = {
-  persons: IPerson[];
+  persons: SortablePerson[];
+};
+export type SortablePerson = IPerson & {
+  id: string;
+  childrens: SortablePerson[];
 };
 
 const PersonManagePage: NextPageWithLayout<Props> = ({ persons }) => {
-  return <PersonManageUI persons={persons} />;
+  return (
+    <PersonManageUI
+      persons={persons.map((person) => ({
+        ...person,
+        id: person._id,
+      }))}
+    />
+  );
 };
 
 PersonManagePage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;

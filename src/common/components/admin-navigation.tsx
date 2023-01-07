@@ -10,17 +10,18 @@ type NavigationItemProps = {
 }
 
 const NAVIGATION_ITEMS: NavigationItemProps[] = [
-  {value: 'Person Manage', href: '/admin/person-manage'},
-  {value: 'Blog & Posts', href: '/admin/blog-posts'},
-  {value: 'View Pages', href: '/'},
+  {value: 'Quản lí & Sắp xếp', href: '/admin/person-manage'},
+  {value: 'Hệ thống bài viết', href: '/admin/blog-posts'},
+  {value: 'Thư viện', href: '/admin/gallery'},
+  {value: 'Về trang chính', href: '/'},
 ];
 
 const AdminNavigation = () => {
   const router = useRouter();
 
   return (
-    <nav className='relative w-64 bg-white shadow-lg h-full'>
-      <ul className='divide-y divide-gray'>
+    <nav className='relative w-64 bg-white shadow-lg h-full p-2'>
+      <ul className=''>
         {NAVIGATION_ITEMS.map((itemProps) => {
           const isActive = router.pathname === itemProps.href;
           return (
@@ -42,8 +43,8 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   active,
 }) => {
   const classes = classNames({
-    'px-4 py-3 block hover:bg-gray-100 transition': true,
-    'bg-gray-100': active,
+    'px-4 py-3 block transition m-3 rounded shadow-lg font-bold text-sm text-black border-l-4 border-green-800': true,
+    'bg-green-600 text-white': active,
   });
   return (
     <li className='relative'>

@@ -5,7 +5,7 @@ export type Person = {
   date_of_birth: string;
   date_of_death?: string;
   gender: 'male' | 'female'; 
-  childrens?: Schema.Types.ObjectId[];
+  children?: Schema.Types.ObjectId[];
   sisters?: Schema.Types.ObjectId[];
   brothers?: Schema.Types.ObjectId[];
   wife?: Schema.Types.ObjectId;
@@ -25,7 +25,7 @@ export type IPerson = Omit<
   | 'mother'
 > & {
   _id: string;
-  childrens?: IPerson[];
+  children?: IPerson[];
   sisters?: IPerson[];
   brothers?: IPerson[];
   wife?: IPerson;
@@ -40,7 +40,7 @@ const PersonSchema = new Schema<Person>(
     date_of_birth: { type: String, required: true },
     date_of_death: { type: String, required: false, default: null },
     gender: {type: String, required: true},
-    childrens: [
+    children: [
       {
         type: Schema.Types.ObjectId,
         ref: 'person',

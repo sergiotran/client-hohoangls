@@ -1,145 +1,134 @@
 import React from 'react';
 import { IPerson } from '@/models/person';
-import { closestCenter, DndContext, DragEndEvent, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { sortableClassName, sortableItemClassName } from './person-constant';
-import { CSS } from '@dnd-kit/utilities';
-import { find, findIndex } from 'lodash';
-import { DragStartEvent, UniqueIdentifier } from '@dnd-kit/core/dist/types';
+import { SimpleTreeItemWrapper, SortableTreeProps, TreeItemComponentProps } from 'dnd-kit-sortable-tree';
+import { isEmpty } from 'lodash';
+import dynamic from 'next/dynamic';
+import { TreeItemComponentType } from 'dnd-kit-sortable-tree/dist/types';
+import { sortableItemClassName } from './person-constant';
+import classNames from 'classnames';
+
+const SortableTree = dynamic<SortableTreeProps<SortablePerson, HTMLElement>>(() => import('dnd-kit-sortable-tree').then((lib) => lib.SortableTree), {
+  ssr: false
+});
 
 type SortablePerson = IPerson & {
   id: string;
-  childrens: SortablePerson[];
+  children: SortablePerson[];
 }
 type Props = {
-  persons: SortablePerson[]
+  persons: IPerson[]
 }
+
+const genderMapping = {
+  "male": "Nam",
+  "female": "Nữ"
+};
+
 const PersonManageUI: React.FC<Props> = ({ persons }) => {
-  const [items, setItems] = React.useState<SortablePerson[]>(
-    (persons || []).map((person) => ({
-      ...person,
-      id: person._id,
-    })),
-  );
-  const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(null);
+  const [items, setItems] = React.useState<SortablePerson[]>([]);
 
-  const handleDragStart = React.useCallback((e: DragStartEvent) => {
-    const { active } = e;
-    setActiveId(active.id);
-  }, []);
+  React.useEffect(() => {
+    if (!isEmpty(persons)) {
+      const personList = persons.map((person) => ({
+        ...person,
+        id: person._id,
+      })) as SortablePerson[];
+      setItems(personList);
+    }
+  }, [persons]);
 
-  const handleDragEnd = React.useCallback((parentId?: string) => {
-    return (e: DragEndEvent) => {
-      if (e) {
-        const { active, over } = e;
-
-        if (!!over && active.id !== over.id) {
-          setItems((items) => {
-            const oldIndex = findIndex(items, {
-              _id: active.id as string,
-            });
-            const newIndex = findIndex(items, {
-              _id: over.id as string,
-            });
-
-            return arrayMove(items, oldIndex, newIndex);
-          });
-        }
-        setActiveId(null);
-      }
-    };
-  }, []);
+  console.log(items);
 
   return (
-    <SortableList
-      items={items}
-      activeId={activeId}
-      handleDragEnd={handleDragEnd}
-      handleDragStart={handleDragStart}
-    />
-  );
-};
-
-const SortableList: React.FC<{
-  items: SortablePerson[];
-  activeId: UniqueIdentifier | null,
-  handleDragStart: (e: DragStartEvent) => void;
-  handleDragEnd: (parentId?: string) => (e: DragEndEvent) => void;
-  parentId?: string;
-}> = ({ items, handleDragStart, handleDragEnd, parentId, activeId }) => {
-  const sensors = useSensors(useSensor(PointerSensor));
-
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd(parentId)}
-    >
-      <SortableContext
-        id={parentId}
-        items={items.map((item) => item._id)}
-        strategy={verticalListSortingStrategy}
-        key={parentId}
-      >
-        <div className={sortableClassName}>
-          {items.map((person) => {
-            return (
-              <SortableItem
-                key={person._id}
-                activeId={activeId}
-                handleDragEnd={handleDragEnd}
-                handleDragStart={handleDragStart}
-                data={person}
-              />
-            );
-          })}
+    <div>
+      <div className='panel border p-3 rounded mb-5 flex flex-row justify-start items-center gap-5'>
+        <h1 className='text-lg text-left font-bold'>Quản lý & sắp xếp</h1>
+        <div className='flex flex-row gap-1'>
+          <button className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'>
+            Lưu
+          </button>
+          <button className='py-2 px-5 bg-purple-700 hover:bg-purple-800 transition text-white text-sm rounded'>
+            Tạo mới
+          </button>
         </div>
-      </SortableContext>
-      <DragOverlay>
-        {!!activeId && <Item {...find(items, {
-          _id: activeId as string
-        }) as SortablePerson} />}
-      </DragOverlay>
-    </DndContext>
-  );
-};
-
-const SortableItem: React.FC<{
-  data: SortablePerson;
-  activeId: UniqueIdentifier | null;
-  handleDragStart: (e: DragStartEvent) => void;
-  handleDragEnd: (parentId?: string) => (e: DragEndEvent) => void;
-}> = ({ handleDragStart, handleDragEnd, data: person, activeId }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: person._id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
-      <Item {...person} />
-      <SortableList
-        items={person.childrens || []}
-        activeId={activeId}
-        handleDragStart={handleDragStart}
-        handleDragEnd={handleDragEnd}
-        parentId={person._id}
+      </div>
+      <SortableTree
+        items={items}
+        onItemsChanged={setItems}
+        indentationWidth={60}
+        indicator
+        TreeItemComponent={
+          Person as TreeItemComponentType<SortablePerson, HTMLElement>
+        }
       />
     </div>
   );
 };
 
-const Item: React.FC<SortablePerson> = (props) => {
-  return <div className={sortableItemClassName}>{props.name}</div>;
-};
+const Person = React.forwardRef<
+  HTMLDivElement,
+  TreeItemComponentProps<SortablePerson>
+>(function _(props, ref) {
+  const { item, isLast, depth, parent, indentationWidth, ...dndProps } = props;
+  const deleteBtnClasses = classNames({
+    'py-2 px-5 bg-red-700 hover:bg-red-800 transition text-white text-sm rounded': true,
+    // 'opacity-5': !!item.children.length
+  });
+
+  return (
+    <SimpleTreeItemWrapper
+      {...dndProps}
+      item={item}
+      isLast={isLast}
+      depth={depth}
+      parent={parent}
+      indentationWidth={indentationWidth}
+      clone={false}
+      showDragHandle
+      indicator
+      contentClassName='bg-white p-3'
+      ref={ref}
+    >
+      <div className={sortableItemClassName}>
+        <div className='flex flex-row justify-between select-none'>
+          <div className='text-ellipsis overflow-hidden flex-nowrap'>
+            <div className='info flex text-sm font-bold gap-3'>
+              <span className='text-gray-500'>Tên:</span>
+              <span>{props.item.name}</span>
+            </div>
+            <div className='info flex text-sm font-bold gap-3'>
+              <span className='text-gray-500'>Ngày sinh:</span>
+              <span>{props.item.date_of_birth}</span>
+            </div>
+            <div className='info flex text-sm font-bold gap-3'>
+              <span className='text-gray-500'>Ngày mất:</span>
+              <span>
+                {props.item.date_of_death
+                  ? props.item.date_of_death
+                  : 'Chưa mất'}
+              </span>
+            </div>
+            <div className='info flex text-sm font-bold gap-3'>
+              <span className='text-gray-500'>Giới tính:</span>
+              <span>
+                {genderMapping[props.item.gender] || 'Không xác định'}
+              </span>
+            </div>
+          </div>
+          <div className='flex-1 flex flex-row justify-end items-center'>
+            <div className='flex flex-col gap-1'>
+              <button className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'>
+                Chỉnh sửa
+              </button>
+              <button className={deleteBtnClasses}>
+                Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SimpleTreeItemWrapper>
+  );
+});
 
 export default PersonManageUI;
