@@ -1,12 +1,20 @@
-import PersonModel, { IPerson, Person } from '@/models/person';
+import PersonModel, { Person } from '@/models/person';
 
 class PersonController {
   async findAll() {
     try {
-      const persons = await PersonModel.find({}).populate(['childrens', 'brothers', 'sisters', 'wife', 'husband', 'father', 'mother']);
+      const persons = await PersonModel.find({}).populate([
+        'children',
+        'brothers',
+        'sisters',
+        'wife',
+        'husband',
+        'father',
+        'mother',
+      ]);
       return {
         status: 200,
-        data: persons
+        data: persons,
       };
     } catch (error) {
       throw error as Error;
@@ -19,8 +27,8 @@ class PersonController {
 
       return {
         status: 200,
-        data: created
-      }
+        data: created,
+      };
     } catch (error) {
       throw error as Error;
     }
@@ -39,6 +47,11 @@ class PersonController {
       throw error as Error;
     }
   }
-} 
+
+  async updateAll(dto: Person[]) {
+    console.log(dto);
+    return true;
+  }
+}
 
 export default PersonController;

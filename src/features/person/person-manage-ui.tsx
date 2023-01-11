@@ -1,20 +1,17 @@
 import React from 'react';
 import { IPerson } from '@/models/person';
 import { SimpleTreeItemWrapper, SortableTreeProps, TreeItemComponentProps } from 'dnd-kit-sortable-tree';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import dynamic from 'next/dynamic';
-import { TreeItemComponentType } from 'dnd-kit-sortable-tree/dist/types';
+import { FlattenedItem, TreeItemComponentType, TreeItems } from 'dnd-kit-sortable-tree/dist/types';
 import { sortableItemClassName } from './person-constant';
 import classNames from 'classnames';
+import { SortablePerson } from '@/admin/person-manage';
 
 const SortableTree = dynamic<SortableTreeProps<SortablePerson, HTMLElement>>(() => import('dnd-kit-sortable-tree').then((lib) => lib.SortableTree), {
   ssr: false
 });
 
-type SortablePerson = IPerson & {
-  id: string;
-  children: SortablePerson[];
-}
 type Props = {
   persons: IPerson[]
 }
@@ -37,23 +34,35 @@ const PersonManageUI: React.FC<Props> = ({ persons }) => {
     }
   }, [persons]);
 
-  console.log(items);
+  const saveBtnClasses = React.useMemo(() => {
+    return classNames({
+      'py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded':
+        true,
+      'opacity-50 cursor-not-allowed': isEqual(
+        persons,
+        (items as TreeItems<SortablePerson>).map((item) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { depth, parent, parentId, isLast, index, ...person } =
+            item as FlattenedItem<SortablePerson>;
+          return person;
+        }),
+      ),
+    });
+  }, [persons, items]);
 
   return (
     <div>
       <div className='panel border p-3 rounded mb-5 flex flex-row justify-start items-center gap-5'>
         <h1 className='text-lg text-left font-bold'>Quản lý & sắp xếp</h1>
         <div className='flex flex-row gap-1'>
-          <button className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'>
-            Lưu
-          </button>
+          <button className={saveBtnClasses}>Lưu</button>
           <button className='py-2 px-5 bg-purple-700 hover:bg-purple-800 transition text-white text-sm rounded'>
             Tạo mới
           </button>
         </div>
       </div>
       <SortableTree
-        items={items}
+        items={items as TreeItems<SortablePerson>}
         onItemsChanged={setItems}
         indentationWidth={60}
         indicator
@@ -70,9 +79,11 @@ const Person = React.forwardRef<
   TreeItemComponentProps<SortablePerson>
 >(function _(props, ref) {
   const { item, isLast, depth, parent, indentationWidth, ...dndProps } = props;
+
   const deleteBtnClasses = classNames({
-    'py-2 px-5 bg-red-700 hover:bg-red-800 transition text-white text-sm rounded': true,
-    // 'opacity-5': !!item.children.length
+    'py-2 px-5 bg-red-700 hover:bg-red-800 transition text-white text-sm rounded':
+      true,
+    hidden: !(item.children || []).length,
   });
 
   return (
@@ -83,7 +94,6 @@ const Person = React.forwardRef<
       depth={depth}
       parent={parent}
       indentationWidth={indentationWidth}
-      clone={false}
       showDragHandle
       indicator
       contentClassName='bg-white p-3'
@@ -115,14 +125,12 @@ const Person = React.forwardRef<
               </span>
             </div>
           </div>
-          <div className='flex-1 flex flex-row justify-end items-center'>
+          <div className='flex-1 flex flex-row justify-end items-center ml-5'>
             <div className='flex flex-col gap-1'>
               <button className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'>
                 Chỉnh sửa
               </button>
-              <button className={deleteBtnClasses}>
-                Xóa
-              </button>
+              <button className={deleteBtnClasses}>Xóa</button>
             </div>
           </div>
         </div>
