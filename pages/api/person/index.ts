@@ -9,6 +9,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   await dbConnect();
+
   switch (req.method) {
     case 'GET':
       controller
@@ -31,7 +32,10 @@ export default async function handler(
         .catch((error: Error) => res.status(400).json(error));
       break;
     case 'PUT':
-      controller.updateAll(req.body);
+      controller
+        .updateAll(req.body)
+        .then((data) => res.status(200).json(data))
+        .catch((error: Error) => res.status(400).json(error));
       break;
     default:
       res.status(404).json({

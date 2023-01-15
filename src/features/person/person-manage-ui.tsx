@@ -1,75 +1,71 @@
 import React from 'react';
-import { IPerson } from '@/models/person';
-import { SimpleTreeItemWrapper, SortableTreeProps, TreeItemComponentProps } from 'dnd-kit-sortable-tree';
-import { isEmpty, isEqual } from 'lodash';
+import {
+  SimpleTreeItemWrapper,
+  SortableTreeProps,
+  TreeItemComponentProps,
+} from 'dnd-kit-sortable-tree';
 import dynamic from 'next/dynamic';
-import { FlattenedItem, TreeItemComponentType, TreeItems } from 'dnd-kit-sortable-tree/dist/types';
+import {
+  ItemChangedReason,
+  TreeItemComponentType,
+  TreeItems,
+} from 'dnd-kit-sortable-tree/dist/types';
 import { sortableItemClassName } from './person-constant';
 import classNames from 'classnames';
-import { SortablePerson } from '@/admin/person-manage';
+import { SortablePerson, selectPersonList, setListPerson, updatePersons } from './person-slice';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '@/app/store';
 
-const SortableTree = dynamic<SortableTreeProps<SortablePerson, HTMLElement>>(() => import('dnd-kit-sortable-tree').then((lib) => lib.SortableTree), {
-  ssr: false
-});
-
-type Props = {
-  persons: IPerson[]
-}
+const SortableTree = dynamic<SortableTreeProps<SortablePerson, HTMLElement>>(
+  () => import('dnd-kit-sortable-tree').then((lib) => lib.SortableTree),
+  {
+    ssr: false,
+  },
+);
 
 const genderMapping = {
-  "male": "Nam",
-  "female": "Nữ"
+  male: 'Nam',
+  female: 'Nữ',
 };
 
-const PersonManageUI: React.FC<Props> = ({ persons }) => {
-  const [items, setItems] = React.useState<SortablePerson[]>([]);
+const PersonManageUI: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const persons = useSelector(selectPersonList);
 
-  React.useEffect(() => {
-    if (!isEmpty(persons)) {
-      const personList = persons.map((person) => ({
-        ...person,
-        id: person._id,
-      })) as SortablePerson[];
-      setItems(personList);
-    }
-  }, [persons]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handlePersonListChanged = (items: TreeItems<SortablePerson>, _reason: ItemChangedReason<SortablePerson>) => {
+    dispatch(setListPerson(items));
+  };
 
-  const saveBtnClasses = React.useMemo(() => {
-    return classNames({
-      'py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded':
-        true,
-      'opacity-50 cursor-not-allowed': isEqual(
-        persons,
-        (items as TreeItems<SortablePerson>).map((item) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { depth, parent, parentId, isLast, index, ...person } =
-            item as FlattenedItem<SortablePerson>;
-          return person;
-        }),
-      ),
-    });
-  }, [persons, items]);
+  const handleSaveChange = () => {
+    dispatch(updatePersons(persons));
+  };
 
   return (
     <div>
       <div className='panel border p-3 rounded mb-5 flex flex-row justify-start items-center gap-5'>
         <h1 className='text-lg text-left font-bold'>Quản lý & sắp xếp</h1>
         <div className='flex flex-row gap-1'>
-          <button className={saveBtnClasses}>Lưu</button>
+          <button onClick={handleSaveChange} className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'>Lưu</button>
           <button className='py-2 px-5 bg-purple-700 hover:bg-purple-800 transition text-white text-sm rounded'>
             Tạo mới
           </button>
         </div>
       </div>
-      <SortableTree
-        items={items as TreeItems<SortablePerson>}
-        onItemsChanged={setItems}
-        indentationWidth={60}
-        indicator
-        TreeItemComponent={
-          Person as TreeItemComponentType<SortablePerson, HTMLElement>
-        }
-      />
+      <ul className='p-3 border rounded shadow-lg'>
+        <SortableTree
+          items={(persons.map((person) => ({
+            ...person,
+            id: person._id
+          }))) as TreeItems<SortablePerson>}
+          onItemsChanged={handlePersonListChanged}
+          indentationWidth={60}
+          // indicator
+          TreeItemComponent={
+            Person as TreeItemComponentType<SortablePerson, HTMLElement>
+          }
+        />
+      </ul>
     </div>
   );
 };

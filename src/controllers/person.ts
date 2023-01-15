@@ -1,5 +1,4 @@
-import PersonModel, { Person } from '@/models/person';
-
+import PersonModel, { IPerson, Person } from '@/models/person';
 class PersonController {
   async findAll() {
     try {
@@ -49,8 +48,27 @@ class PersonController {
   }
 
   async updateAll(dto: Person[]) {
-    console.log(dto);
-    return true;
+    try {
+      const updateList = async (list: Person[]) => {
+        if (!list || !list.length) {
+          return;
+        }
+        for (let i = 0; i < list.length; i++) {
+          await this.update((list[i] as IPerson)._id, list[i]);
+          if (list[i].children) {
+            updateList(list[i].children as unknown as Person[]);
+          }
+        }
+      };
+      await updateList(dto);
+      const list = await this.findAll();
+      return {
+        status: 200,
+        data: list.data,
+      };
+    } catch (error) {
+      throw error as Error;
+    }
   }
 }
 

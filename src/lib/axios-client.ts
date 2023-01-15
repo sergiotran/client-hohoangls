@@ -5,7 +5,6 @@ const baseURL =
 
 const axiosClient = axios.create({
   baseURL,
-  timeout: 2000,
   withCredentials: true
 });
 

@@ -36,3 +36,15 @@ export const updatePerson = (dto: Partial<IPerson>): Promise<IPerson> => {
     }).catch((reason) => reject(reason));
   });
 };
+
+type IUpdateListPersonReponseFullFilled = {
+  status: number;
+  data: IPerson[]
+}
+export const updateListPerson = (dto: IPerson[]): Promise<IPerson[]> => {
+  return new Promise((resolve, reject) => {
+    axiosClient.put<IUpdateListPersonReponseFullFilled>('/api/person', dto).then((res) => {
+      resolve(res.data.data);
+    }).catch((reason) => reject(reason));
+  });
+};
