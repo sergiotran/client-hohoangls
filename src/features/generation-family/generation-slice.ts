@@ -1,15 +1,14 @@
-import { RootState } from '@/app/store';
-import { IPerson } from '@/models/person';
+import { RootState } from '@/common/app/store';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getPersons, updateListPerson } from './person-api';
+import { PersonModal } from './models/person';
 
-export type SortablePerson = IPerson & {
+export type IPerson = PersonModal & {
   id: string;
-  children: SortablePerson[];
+  children: IPerson[];
 };
 type IPersonSliceState = {
   loading: boolean;
-  personList: SortablePerson[];
+  personList: IPerson[];
 };
 const initialState: IPersonSliceState = {
   loading: false,
@@ -18,8 +17,7 @@ const initialState: IPersonSliceState = {
 
 export const fetchPersons = createAsyncThunk('person/fetch', async () => {
   try {
-    const persons = await getPersons();
-    return persons;
+    return [];
   } catch (error) {
     console.error(error);
     throw error;
@@ -28,21 +26,20 @@ export const fetchPersons = createAsyncThunk('person/fetch', async () => {
 
 export const updatePersons = createAsyncThunk('person/updateList', async (list: IPerson[]) => {
   try {
-    const persons = await updateListPerson(list);
-    return persons;
+    return [];
   } catch (error) {
     console.error(error);
     throw error;
   }
 });
 
-const personSlice = createSlice({
-  name: 'person',
+const generationSlice = createSlice({
+  name: 'generation',
   initialState,
   reducers: {
     setListPerson: (
       state: IPersonSliceState,
-      action: PayloadAction<SortablePerson[]>,
+      action: PayloadAction<IPerson[]>,
     ) => {
       state.personList = action.payload.map((person) => ({
         ...person,
@@ -56,9 +53,9 @@ const personSlice = createSlice({
     });
     builder.addCase(
       fetchPersons.fulfilled,
-      (state: IPersonSliceState, action: PayloadAction<SortablePerson[]>) => {
+      (state: IPersonSliceState, action: PayloadAction<IPerson[]>) => {
         state.loading = false;
-        state.personList = action.payload as SortablePerson[];
+        state.personList = action.payload as IPerson[];
       },
     );
     builder.addCase(fetchPersons.rejected, (state: IPersonSliceState) => {
@@ -70,9 +67,9 @@ const personSlice = createSlice({
     });
     builder.addCase(
       updatePersons.fulfilled,
-      (state: IPersonSliceState, action: PayloadAction<SortablePerson[]>) => {
+      (state: IPersonSliceState, action: PayloadAction<IPerson[]>) => {
         state.loading = false;
-        state.personList = action.payload as SortablePerson[];
+        state.personList = action.payload as IPerson[];
       },
     );
     builder.addCase(updatePersons.rejected, (state: IPersonSliceState) => {
@@ -81,7 +78,7 @@ const personSlice = createSlice({
   },
 });
 
-export const { setListPerson } = personSlice.actions;
-export const selectPersonList = (state: RootState) => state.person.personList;
+export const { setListPerson } = generationSlice.actions;
+export const selectPersonList = (state: RootState) => state.generation.personList;
 
-export default personSlice.reducer;
+export default generationSlice.reducer;

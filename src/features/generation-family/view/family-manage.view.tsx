@@ -1,23 +1,30 @@
-import React from 'react';
-import {
-  SimpleTreeItemWrapper,
+import { useAppDispatch } from '@/common/app/store';
+import classNames from 'classnames';
+import type {
   SortableTreeProps,
   TreeItemComponentProps,
 } from 'dnd-kit-sortable-tree';
-import dynamic from 'next/dynamic';
 import {
-  ItemChangedReason,
   TreeItemComponentType,
   TreeItems,
 } from 'dnd-kit-sortable-tree/dist/types';
-import { sortableItemClassName } from './person-constant';
-import classNames from 'classnames';
-import { SortablePerson, selectPersonList, setListPerson, updatePersons } from './person-slice';
+import dynamic from 'next/dynamic';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/app/store';
+import { IPerson, selectPersonList, setListPerson, updatePersons } from '../generation-slice';
+import FamilyFactoryModal from './inc/family-factory-modal';
+import { PrimaryButton } from '@/common/components/buttons';
 
-const SortableTree = dynamic<SortableTreeProps<SortablePerson, HTMLElement>>(
+const SortableTree = dynamic<SortableTreeProps<IPerson, HTMLElement>>(
   () => import('dnd-kit-sortable-tree').then((lib) => lib.SortableTree),
+  {
+    ssr: false,
+  },
+);
+
+const SimpleTreeItemWrapper = dynamic(
+  () =>
+    import('dnd-kit-sortable-tree').then((lib) => lib.SimpleTreeItemWrapper),
   {
     ssr: false,
   },
@@ -30,10 +37,11 @@ const genderMapping = {
 
 const PersonManageUI: React.FC = () => {
   const dispatch = useAppDispatch();
+  const [familyFactoryOpen, setFamilyFactoryOpen] =
+    React.useState<boolean>(false);
   const persons = useSelector(selectPersonList);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handlePersonListChanged = (items: TreeItems<SortablePerson>, _reason: ItemChangedReason<SortablePerson>) => {
+  const handlePersonListChanged = (items: TreeItems<IPerson>) => {
     dispatch(setListPerson(items));
   };
 
@@ -41,38 +49,58 @@ const PersonManageUI: React.FC = () => {
     dispatch(updatePersons(persons));
   };
 
+  const handleShowFamilyFactoryModal = () => {
+    setFamilyFactoryOpen(true);
+  };
+  const handleCloseFamilyFactoryModal = () => {
+    setFamilyFactoryOpen(false);
+  };
+
   return (
     <div>
       <div className='panel border p-3 rounded mb-5 flex flex-row justify-start items-center gap-5'>
-        <h1 className='text-lg text-left font-bold'>Quản lý & sắp xếp</h1>
+        <h2 className='text-lg text-left font-bold'>Quản lý & sắp xếp</h2>
         <div className='flex flex-row gap-1'>
-          <button onClick={handleSaveChange} className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'>Lưu</button>
-          <button className='py-2 px-5 bg-purple-700 hover:bg-purple-800 transition text-white text-sm rounded'>
-            Tạo mới
+          <button
+            onClick={handleSaveChange}
+            className='py-2 px-5 bg-green-700 hover:bg-green-800 transition text-white text-sm rounded'
+          >
+            Lưu
           </button>
+          <PrimaryButton
+            onClick={handleShowFamilyFactoryModal}
+          >
+            Thêm gia đình
+          </PrimaryButton>
         </div>
       </div>
       <ul className='p-3 border rounded shadow-lg'>
         <SortableTree
-          items={(persons.map((person) => ({
-            ...person,
-            id: person._id
-          }))) as TreeItems<SortablePerson>}
+          items={
+            persons.map((person) => ({
+              ...person,
+              id: person._id,
+            })) as TreeItems<IPerson>
+          }
           onItemsChanged={handlePersonListChanged}
           indentationWidth={60}
           // indicator
           TreeItemComponent={
-            Person as TreeItemComponentType<SortablePerson, HTMLElement>
+            Person as TreeItemComponentType<IPerson, HTMLElement>
           }
         />
       </ul>
+      <FamilyFactoryModal
+        open={familyFactoryOpen}
+        handleClose={handleCloseFamilyFactoryModal}
+      />
     </div>
   );
 };
 
 const Person = React.forwardRef<
   HTMLDivElement,
-  TreeItemComponentProps<SortablePerson>
+  TreeItemComponentProps<IPerson>
 >(function _(props, ref) {
   const { item, isLast, depth, parent, indentationWidth, ...dndProps } = props;
 
@@ -95,7 +123,7 @@ const Person = React.forwardRef<
       contentClassName='bg-white p-3'
       ref={ref}
     >
-      <div className={sortableItemClassName}>
+      <div className='border w-full bg-slate-100 px-5 py-2 rounded ml-3'>
         <div className='flex flex-row justify-between select-none'>
           <div className='text-ellipsis overflow-hidden flex-nowrap'>
             <div className='info flex text-sm font-bold gap-3'>

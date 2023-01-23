@@ -1,4 +1,4 @@
-import withAuth from '@/common/hooks/withAuth'
+import withAuth from '@/common/hoc/withAuth'
 import React from 'react'
 import { NextPageWithLayout } from './_app'
 

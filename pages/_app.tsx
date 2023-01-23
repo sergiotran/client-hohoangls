@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import '@/index.scss';
 import { Provider } from 'react-redux';
-import store from '@/app/store';
+import store from '@/common/app/store';
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
