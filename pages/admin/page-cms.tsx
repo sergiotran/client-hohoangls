@@ -6,6 +6,6 @@ const BlogPostsPage: NextPageWithLayout = () => {
   return <div>BlogPostsPage</div>;
 };
 
-BlogPostsPage.getLayout = (page) => <AdminLayout title='Quanr lí trang tĩnh'>{page}</AdminLayout>;
+BlogPostsPage.getLayout = (page) => <AdminLayout title='Quản lí trang tĩnh'>{page}</AdminLayout>;
 
 export default BlogPostsPage;

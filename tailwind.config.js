@@ -4,6 +4,14 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
+        fadeIn: {
+          '0%': {
+            opacity: 0
+          },
+          '100%': {
+            opacity: 1
+          }
+        },
         slideIn: {
           '0%': {
             opacity: 0,
@@ -16,7 +24,8 @@ module.exports = {
         }
       },
       animation: {
-        slideIn: 'slideIn 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards'
+        slideIn: 'slideIn 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards',
+        fadeIn: 'fadeIn 500ms cubic-bezier(0.165, 0.840, 0.440, 1.000) forwards'
       }
     },
   },
