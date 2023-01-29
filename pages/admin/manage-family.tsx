@@ -1,20 +1,14 @@
 import React from 'react';
 import { NextPageWithLayout } from '@/_app';
 import AdminLayout from '@/common/layouts/admin-layout';
-import PersonManageUI from '@/features/generation-family/view/family-manage.view';
-import { fetchPersons } from '@/features/generation-family/generation-slice';
-import { useAppDispatch } from '@/common/app/store';
+import FamilyManageView from '@/features/generation-family/view/family-manage.view';
 
 const PersonManagePage: NextPageWithLayout = () => {
-  const dispatch = useAppDispatch();
-
-  React.useEffect(() => {
-    dispatch(fetchPersons());
-  }, []);
-
-  return <PersonManageUI />;
+  return <FamilyManageView />;
 };
 
-PersonManagePage.getLayout = (page) => <AdminLayout title='Quản lí gia đình'>{page}</AdminLayout>;
+PersonManagePage.getLayout = (page) => (
+  <AdminLayout title='Quản lí gia đình'>{page}</AdminLayout>
+);
 
 export default PersonManagePage;

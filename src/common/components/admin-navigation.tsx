@@ -25,7 +25,7 @@ type NavigationListProps = {
 const ICON_SIZE = 20;
 const NAVIGATION_ITEMS: NavigationItemProps[] = [
   {
-    value: 'Thiết lập cây thế hệ',
+    value: 'Thiết lập cây gia phả',
     icon: <UsersIcon width={ICON_SIZE} height={ICON_SIZE} />,
     href: '/admin/manage-family',
     children: [

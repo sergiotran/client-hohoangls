@@ -1,5 +1,5 @@
 import { Schema, model, models } from 'mongoose';
-import { PersonModal } from './person';
+import { PersonModal } from '../../person/models/person';
 
 
 export interface FamilyModal {

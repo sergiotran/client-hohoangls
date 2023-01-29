@@ -1,8 +1,8 @@
+import personSlice from '@/features/person/person-slice';
 import { combineReducers } from 'redux';
-import personReducer from '@/features/generation-family/generation-slice';
 
 const rootReducer = combineReducers({
-   generation: personReducer
+   person: personSlice 
 });
 
 export default rootReducer;

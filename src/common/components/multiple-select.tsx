@@ -3,6 +3,7 @@ import useClickOutside from '../hooks/useClickOutside';
 import type { Path, PathValue, UseFormRegisterReturn, UseFormSetValue } from 'react-hook-form';
 import { filter, find, findIndex } from 'lodash';
 import classNames from 'classnames';
+import { removeVietnameseTones } from '../utils/unicode-utils';
 
 type Props<T extends object> = {
   data: T[];
@@ -72,7 +73,9 @@ const MultipleSelect = <T extends object>({
 
   const dataWithSearch = React.useMemo(() => {
     return filter(data, (item) => {
-      return ('' + item[searchField]).search(new RegExp(searchText, 'gi')) > -1;
+      const textA = removeVietnameseTones(('' + item[searchField]).toLowerCase());
+      const textB = removeVietnameseTones(searchText.toLowerCase());
+      return textA.search(new RegExp(textB, 'gi')) > -1;
     });
   }, [searchText, data]);
 
@@ -94,7 +97,7 @@ const MultipleSelect = <T extends object>({
       <h4 className='font-bold text-sm mb-1' onClick={handleFocus}>
         {label}
       </h4>
-      <div className='p-3 bg-gray-100 border cursor-pointer rounded shadow overflow-hidden'>
+      <div className='p-3 border border-teal-500 cursor-pointer rounded overflow-hidden'>
         <div className='flex flex-row gap-3'>
           {!selectedValues.length ? (
             <p className='text-xs text-gray-600'>Chọn thành viên...</p>
@@ -112,18 +115,18 @@ const MultipleSelect = <T extends object>({
       </div>
       {isFocus && (
         <div
-          className='absolute left-0 w-full top-full rounded bg-white shadow-lg z-20 divide-y divide-y-1 overflow-hidden'
+          className='absolute mt-3 left-0 w-full top-full rounded bg-teal-100 z-20 divide-y divide-y-1 overflow-hidden p-3 shadow'
           onClick={(e) => e.stopPropagation()}
         >
-          <div className='border'>
+          <div className='border border-teal-300 text-white rounded overflow-hidden'>
             <input
-              className='p-2 w-full'
+              className='p-2 w-full  outline-none text-black text-bold placeholder-black'
               type='text'
               onChange={(e) => setSearchText(e.target.value)}
               placeholder='Tìm kiếm ...'
             />
           </div>
-          <div className='flex flex-col gap-2 p-2'>
+          <div className='flex flex-col gap-2 pt-2 max-h-36 overflow-auto rounded mt-3'>
             {(() => {
               if(!dataWithSearch) {
                 console.log('hehe');
@@ -134,8 +137,8 @@ const MultipleSelect = <T extends object>({
                   <div
                     key={index}
                     className={classNames({
-                      'p-2 text-sm cursor-pointer rounded border': true,
-                      'bg-green-200 hover:bg-green-200':
+                      'p-2 text-sm cursor-pointer rounded bg-teal-200': true,
+                      'bg-teal-500 text-white drop-shadow':
                         findIndex(
                           selectedValues,
                           (filterItem) =>

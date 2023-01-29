@@ -12,8 +12,7 @@ export interface PersonModal {
   gender: Gender;
   index: number;
   isMarried: boolean;
-  familyId: Schema.Types.ObjectId;
-  childrenId: Schema.Types.ObjectId;
+  family: Schema.Types.ObjectId; 
 }
 
 const personSchema = new Schema<PersonModal>({
@@ -39,15 +38,11 @@ const personSchema = new Schema<PersonModal>({
     required: false,
     default: 0
   },
-  familyId: {
+  family: {
     type: Schema.Types.ObjectId,
     ref: 'family',
-    required: true,
-  },
-  childrenId: {
-    type: Schema.Types.ObjectId,
-    ref: 'children',
-    required: true,
+    required: false,
+    default: null,
   },
   isDeath: {
     type: Boolean,
