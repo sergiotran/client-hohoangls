@@ -3,11 +3,12 @@ import Link from 'next/link';
 import React from 'react';
 import classNames from 'classnames';
 import Image from 'next/image';
-import ChevronDown from '../assets/icons/chevron-down';
-import ChevronUp from '../assets/icons/chevron-up';
-import UsersIcon from '../assets/icons/users-icon';
-import BookOpen from '../assets/icons/book-open';
-import ImageIcon from '../assets/icons/image-icon';
+
+import ChevronDown from '@/assets/icons/chevron-down';
+import ChevronUp from '@/assets/icons/chevron-up';
+import UsersIcon from '@/assets/icons/users-icon';
+import BookOpen from '@/assets/icons/book-open';
+import ImageIcon from '@/assets/icons/image-icon';
 
 type NavigationItemProps = {
   value: string;
@@ -27,9 +28,9 @@ const NAVIGATION_ITEMS: NavigationItemProps[] = [
   {
     value: 'Thiết lập cây gia phả',
     icon: <UsersIcon width={ICON_SIZE} height={ICON_SIZE} />,
-    href: '/admin/manage-family',
+    href: '/admin/family-manager',
     children: [
-      { value: 'Gia đình', href: '/admin/manage-family' },
+      { value: 'Gia đình', href: '/admin/family-manager' },
       { value: 'Thành viên gia đình', href: '/admin/manage-person' },
     ],
   },

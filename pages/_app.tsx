@@ -1,9 +1,11 @@
 import { ReactElement, ReactNode } from 'react';
+import { Provider } from 'react-redux';
+import store from '@/app/store';
+
 import type { NextPage } from 'next';
 import type { AppProps } from 'next/app';
-import '@/index.scss';
-import { Provider } from 'react-redux';
-import store from '@/common/app/store';
+
+import '@/assets/styles/global.scss';
 
 export type NextPageWithLayout<P = object, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;

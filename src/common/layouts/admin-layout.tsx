@@ -5,9 +5,10 @@ import Head from 'next/head';
 
 type Props = React.PropsWithChildren & {
   title: string;
+  subtitle?: string;
 };
 
-const AdminLayout: React.FC<Props> = ({ children, title }) => {
+const AdminLayout: React.FC<Props> = ({ children, title, subtitle }) => {
   return (
     <div className='flex flex-row h-full'>
       <Head>
@@ -16,8 +17,11 @@ const AdminLayout: React.FC<Props> = ({ children, title }) => {
       <AdminNavigation />
       <main className='flex-1 p-5 overflow-auto max-h-full'>
         <Container>
-          <header className='p-3 bg-gray-100 rounded shadow-lg mb-5'>
-            <h2 className='text-xl text-left'>{title}</h2>
+          <header className='p-3 bg-green-500 text-white rounded shadow-lg mb-5'>
+            <h2 className='text-xl text-left font-medium'>{title}</h2>
+            {!!subtitle && (
+              <p className='text-sm text-left font-normal'>{subtitle}</p>
+            )}
           </header>
           {children}
         </Container>

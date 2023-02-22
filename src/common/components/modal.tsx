@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import XMark from '../assets/icons/x-mark';
+import XMark from '../../assets/icons/x-mark';
 import { BaseButton } from './buttons';
 
 type Props = {
