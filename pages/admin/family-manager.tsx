@@ -2,7 +2,7 @@ import React from 'react';
 import AdminLayout from '@/common/layouts/admin-layout';
 import FamilyManage from '@/features/family/family-manage';
 import type { GetServerSideProps } from 'next';
-import type { IFamilyModel } from '@/models/family';
+import type { IFamilyModel } from '@/features/family/family-model';
 import type { NextPageWithLayout } from '@/_app';
 
 type PageProps = {

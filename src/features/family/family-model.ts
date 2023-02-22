@@ -9,14 +9,12 @@ export type IFamilyModel = {
 const FamilySchema = new Schema<IFamilyModel>({
   husband: {
     type: Types.ObjectId,
-    required: false,
-    unique: true,
+    required: [true, 'Family need a husband'],
     ref: 'person'
   },
   wife: {
     type: Types.ObjectId,
-    required: false,
-    unique: true,
+    required: [true, 'Family need a wife'],
     ref: 'person'
   },
   childrens: [{

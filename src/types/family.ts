@@ -1,4 +1,4 @@
-import { IFamilyModel } from "@/models/family";
+import { IFamilyModel } from "@/features/family/family-model";
 import Person from "./person";
 
 type Family = IFamilyModel & {
