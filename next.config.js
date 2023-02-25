@@ -3,6 +3,14 @@
  */
 const nextConfig = {
   /* config options here */
+  reactStrictMode: true,
+  typescript: {
+    tsconfigPath: './tsconfig.json'
+  },
+  experimental: {
+    appDir: false,
+    middlewarePrefetch: "flexible"
+  },
   poweredByHeader: false,
   swcMinify: true,
 };
