@@ -129,7 +129,6 @@ const MultipleSelect = <T extends object>({
           <div className='flex flex-col gap-2 pt-2 max-h-36 overflow-auto rounded mt-3'>
             {(() => {
               if(!dataWithSearch) {
-                console.log('hehe');
                 return "Không có dữ liệu";
               }
               return dataWithSearch.map((item, index) => {

@@ -1,15 +1,19 @@
-import { NextFetchEvent, NextMiddleware, NextRequest } from 'next/server';
-import { MiddlewareFactory } from './types';
 import dbConnect from '@/utils/database';
+import { createError } from '@/utils/error';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextHandler } from 'next-connect';
 
-const withDatabaseConnection: MiddlewareFactory = (next: NextMiddleware) => {
-  return async (req: NextRequest, _next: NextFetchEvent) => {
-    const res = await next(req, _next);
-    if (res) {
-      await dbConnect();
-    }
-    return res;
-  };
+const withDatabaseConnect = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  next: NextHandler,
+) => {
+  try {
+    await dbConnect();
+    next();
+  } catch (error) {
+    throw createError(500, 'Database failed to connect');
+  }
 };
 
-export default withDatabaseConnection;
+export default withDatabaseConnect;

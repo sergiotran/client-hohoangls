@@ -1,52 +1,110 @@
-import { Schema, models, model, Types } from "mongoose";
+import { model, models, Schema } from 'mongoose';
+import type { Document, Model } from 'mongoose';
+import { genders } from './person-constant';
 
-const gender = ['male', 'female'] as const;
-
-export type IPersonModel = {
-  fullName: string;
-  dob: string;
-  dod: string;
-  gender: typeof gender[number];
-  family?: Types.ObjectId;
-  sisters: Types.ObjectId[];
-  brothers: Types.ObjectId[];
+interface IPerson {
+  name: string;
+  gender: (typeof genders)[number];
+  birthDate: Date;
+  isDeceased: boolean;
+  deceasedDate: Date | null;
+  siblings: Array<string | IPerson>;
+  children: Array<string | IPerson>;
+  spouse: string | IPerson | null;
+  father: string | IPerson | null;
+  mother: string | IPerson | null;
 }
 
-const PersonSchema = new Schema<IPersonModel>({
-  fullName: {
-    type: String,
-    required: true,
-  },
-  dob: {
-    type: String,
-    required: true,
-  },
-  dod: {
-    type: String,
-    required: false,
-    default: null
-  },
-  gender: {
-    type: String,
-    required: true,
-    enum: gender,
-  },
-  family: {
-    type: Types.ObjectId,
-    required: false,
-    default: [] 
-  },
-  sisters: [{
-    type: Types.ObjectId,
-    required: false,
-    default: [] 
-  }],
-  brothers: [{
-    type: Types.ObjectId,
-    required: false,
-    default: [] 
-  }],
-});
-const PersonModel = models.person || model('person', PersonSchema);
+interface IPersonDocument extends IPerson, Document {}
+type IPersonModel = Model<IPersonDocument>;
 
+const PersonSchema = new Schema<IPersonDocument, IPersonModel>(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    birthDate: {
+      type: Date,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: genders,
+      required: true,
+    },
+    deceasedDate: {
+      type: Date,
+      required: false,
+      default: null,
+    },
+    isDeceased: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    siblings: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'person',
+        required: false,
+        default: [],
+      },
+    ],
+    children: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'person',
+        required: false,
+        default: [],
+      },
+    ],
+    spouse: {
+      type: Schema.Types.ObjectId,
+      ref: 'person',
+      required: false,
+      default: null,
+    },
+    father: {
+      type: Schema.Types.ObjectId,
+      ref: 'person',
+      required: false,
+      default: null,
+    },
+    mother: {
+      type: Schema.Types.ObjectId,
+      ref: 'person',
+      required: false,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+PersonSchema.pre('findOne', function (next) {
+  console.log('hehe');
+  this.populate([
+    {
+      path: 'children',
+      model: PersonModel,
+    },
+  ]);
+  next();
+}).pre('find', function (next) {
+  this.populate([
+    {
+      path: 'children',
+      model: PersonModel,
+    },
+  ]);
+  next();
+});
+
+const PersonModel: IPersonModel =
+  models.person || model('person', PersonSchema);
+
+export { PersonSchema };
+export type { IPersonDocument, IPersonModel, IPerson };
 export default PersonModel;
