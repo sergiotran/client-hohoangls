@@ -28,10 +28,9 @@ const NAVIGATION_ITEMS: NavigationItemProps[] = [
   {
     value: 'Thiết lập cây gia phả',
     icon: <UsersIcon width={ICON_SIZE} height={ICON_SIZE} />,
-    href: '/admin/family-manager',
+    href: '/admin/manage-person',
     children: [
-      { value: 'Gia đình', href: '/admin/family-manager' },
-      { value: 'Thành viên gia đình', href: '/admin/manage-person' },
+      { value: 'Quản lí thành viên', href: '/admin/manage-person' },
     ],
   },
   {

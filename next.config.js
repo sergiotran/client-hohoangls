@@ -13,6 +13,7 @@ const nextConfig = {
   },
   poweredByHeader: false,
   swcMinify: true,
+  skipMiddlewareUrlNormalize: false,
 };
 
 module.exports = nextConfig;

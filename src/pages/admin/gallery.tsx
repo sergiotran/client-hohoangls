@@ -1,5 +1,5 @@
-import { NextPageWithLayout } from '@/_app';
 import AdminLayout from '@/common/layouts/admin-layout';
+import type { NextPageWithLayout } from 'pages/_app';
 import React from 'react';
 
 const GalleryPage: NextPageWithLayout = () => {
